@@ -12,7 +12,7 @@ jobs:
       - name: Checar repositório
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.GIT_TOKEN }}
+          token: ${{secrets.GH_TOKEN}}
           fetch-depth: 0
 
       - name: Configurar Node.js

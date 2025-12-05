@@ -8,7 +8,6 @@ on:
 jobs:
   version:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checar repositório
         uses: actions/checkout@v2

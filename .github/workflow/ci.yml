@@ -9,7 +9,7 @@ jobs:
   version:
     runs-on: ubuntu-latest
     steps:
-      - name: Checar repositório
+      - name: Checar repositorio
         uses: actions/checkout@v2
         with: 
           token: ${{ secrets.GITHUB_TOKEN }}

@@ -3,7 +3,7 @@ name: Pipeline
 on:
   push:
     branches:
-      - feature/actions
+      - main
 
 jobs:
   version:
@@ -28,7 +28,7 @@ jobs:
       - name: Criar nova tag caso não exista
         id: create_initial_tag
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GIT_TOKEN }}
         run: |
           if [ -z "$(git tag)" ]; then
             git config --global user.name 'github-actions'
@@ -92,7 +92,7 @@ jobs:
           
       - name: Commit e push
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GIT_TOKEN }}
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'

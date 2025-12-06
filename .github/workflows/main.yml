@@ -8,14 +8,12 @@ on:
 jobs:
   version:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checar repositório
         uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.GH_TOKEN }}
+        with: 
+          token: ${{ secrets.GIT_TOKEN }}
           fetch-depth: 0
-
       - name: Configurar Node.js
         uses: actions/setup-node@v2
         with:

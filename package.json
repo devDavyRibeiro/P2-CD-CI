@@ -1,10 +1,10 @@
 {
   "name": "vulnerable-nodejs-sast-demo",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Aplicação Node.js com vulnerabilidades para teste de SAST com SonarCloud, Snyk e outras ferramentas",
-  "main": "src/app.js",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node src/app.js",
+    "start": "node src/index.js",
     "test": "mocha tests/**/*.test.js --timeout 10000 --exit",
     "test:coverage": "nyc --reporter=html --reporter=text --reporter=lcov --reporter=json mocha tests/**/*.test.js --timeout 10000 --exit",
     "test:watch": "mocha tests/**/*.test.js --watch",
@@ -14,7 +14,7 @@
   },
   "author": "Security Testing Team",
   "license": "MIT",
-"dependencies": {
+  "dependencies": {
     "express": "^4.18.2",
     "mysql": "^2.18.1",
     "xml2js": "^0.6.2",

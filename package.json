@@ -4,7 +4,7 @@
   "description": "Aplicação Node.js com vulnerabilidades para teste de SAST com SonarCloud, Snyk e outras ferramentas",
   "main": "src/index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node src/index.js",
     "test": "mocha tests/**/*.test.js --timeout 10000 --exit",
     "test:coverage": "nyc --reporter=html --reporter=text --reporter=lcov --reporter=json mocha tests/**/*.test.js --timeout 10000 --exit",
     "test:watch": "mocha tests/**/*.test.js --watch",

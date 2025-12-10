@@ -113,7 +113,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: davyribeiro/tarefa-cd-ci:latest
+          images: davyribeiro/tarefa-cd-ci
           tags: |
             type=raw,value=${{ steps.version.outputs.new_version }}
             type=raw,value=latest

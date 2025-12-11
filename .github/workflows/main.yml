@@ -97,9 +97,17 @@ jobs:
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
           git add -A
-          git commit -m "chore(release): version ${{ env.new_version }}"
-          git tag v${{ env.new_version }}
-          git push origin main --tags
+      
+          git commit -m "chore(release): version ${{ env.new_version }}" || echo "Nenhuma alteração para commit"
+      
+          if git rev-parse "v${{ env.new_version }}" >/dev/null 2>&1; then
+            echo "Tag v${{ env.new_version }} já existe, ignorando criação"
+          else
+            git tag "v${{ env.new_version }}"
+            git push origin "v${{ env.new_version }}"
+          fi
+          
+          git push origin main || true
 
       - name: Login Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a

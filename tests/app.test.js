@@ -1,29 +1,39 @@
-// tests/app.test.js - Testes unitários com cobertura
+// tests/app.test.js - Testes unitários com cobertura (versão PostgreSQL)
 
 const request = require('supertest');
 const { expect } = require('chai');
 const sinon = require('sinon');
 
-// Mock do módulo mysql antes de importar o app
-const mysqlMock = {
-  createConnection: () => ({
-    query: (query, params, callback) => {
-      if (typeof params === 'function') {
-        callback = params;
-        params = null;
-      }
-      callback(null, [{ id: 1, username: 'test', email: 'test@test.com' }]);
-    },
-    connect: (callback) => callback && callback(null),
-    end: () => {}
-  })
+// ----------------------------------------
+// 🔥 MOCK do módulo pg (substitui mysql)
+// ----------------------------------------
+const pgMock = {
+  Client: class {
+    constructor() {}
+
+    connect() {
+      return Promise.resolve();
+    }
+
+    query(query, params) {
+      // Igual ao mysqlMock, retorna sempre um usuário padrão
+      return Promise.resolve({
+        rows: [{ id: 1, username: 'test', email: 'test@test.com' }]
+      });
+    }
+
+    end() {}
+  }
 };
 
-require.cache[require.resolve('mysql')] = {
-  exports: mysqlMock
+// Força o app a usar o mock do pg
+require.cache[require.resolve('pg')] = {
+  exports: pgMock
 };
 
-const app = require('../src/app');
+// Carrega o app DEPOIS de injetar o mock
+const app = require('../src/index');
+
 
 describe('Vulnerable Application - Unit Tests', () => {
   
@@ -87,9 +97,7 @@ describe('Vulnerable Application - Unit Tests', () => {
       const promises = [];
       for (let i = 0; i < 5; i++) {
         promises.push(
-          request(app)
-            .post('/login')
-            .send({ username: 'test', password: 'wrong' })
+          request(app).post('/login').send({ username: 'test', password: 'wrong' })
         );
       }
       const results = await Promise.all(promises);
@@ -198,7 +206,6 @@ describe('Vulnerable Application - Unit Tests', () => {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err);
-          // DES produces short encrypted strings
           expect(res.body.encrypted.length).to.be.lessThan(100);
           done();
         });
@@ -305,7 +312,6 @@ describe('Vulnerable Application - Unit Tests', () => {
     it('should generate different tokens', async () => {
       const res1 = await request(app).get('/generate-token');
       const res2 = await request(app).get('/generate-token');
-      
       expect(res1.body.token).to.not.equal(res2.body.token);
     });
 
@@ -315,7 +321,6 @@ describe('Vulnerable Application - Unit Tests', () => {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err);
-          // Token gerado com Math.random() é curto
           expect(res.body.token.length).to.be.lessThan(20);
           done();
         });
@@ -364,10 +369,10 @@ describe('Vulnerable Application - Unit Tests', () => {
     it('should allow mass assignment of privileged fields', (done) => {
       request(app)
         .post('/users')
-        .send({ 
-          username: 'hacker', 
-          isAdmin: true, 
-          role: 'admin' 
+        .send({
+          username: 'hacker',
+          isAdmin: true,
+          role: 'admin'
         })
         .expect(200)
         .end((err, res) => {
@@ -419,8 +424,6 @@ describe('Vulnerable Application - Unit Tests', () => {
 // Cálculo de cobertura mínima
 describe('Code Coverage Validation', () => {
   it('should achieve minimum code coverage', function() {
-    // Este teste valida que a cobertura mínima foi atingida
-    // A cobertura real será verificada pelo nyc
     expect(true).to.be.true;
   });
 });

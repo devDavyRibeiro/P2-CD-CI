@@ -34,7 +34,7 @@ jobs:
         with:
           args: >
             -Dsonar.organization=devdavyribeiro
-            -Dsonar.projectKey=devdavyribeiro_tarefa-cd-ci
+            -Dsonar.projectKey=devdavyribeiro_P2-CD-CI
             -Dsonar.issues.defaultAssigneeLogin=devdavyribeiro
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

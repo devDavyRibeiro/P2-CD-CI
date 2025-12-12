@@ -30,14 +30,15 @@ jobs:
         continue-on-error: true
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-
+        uses: SonarSource/sonarqube-scan-action@v5
         with:
-          projectBaseDir: .
-          args: '-Dsonar.organization=devdavyribeiro -Dsonar.projectKey= sonar.issues.defaultAssigneeLogin' 
+          args: >
+            -Dsonar.organization=devdavyribeiro
+            -Dsonar.projectKey=devdavyribeiro_tarefa-cd-ci
+            -Dsonar.issues.defaultAssigneeLogin=devdavyribeiro
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Token do GitHub Actions
-          SONAR_TOKEN: ${{ secrets.SONAR_CLOUD }} # Seu Sonar Token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         continue-on-error: true
       - name: Criar nova tag caso não exista
         id: create_initial_tag

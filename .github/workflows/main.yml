@@ -24,6 +24,9 @@ jobs:
 
       - name: Instalar semver
         run: npm install -g semver
+      
+      - name: Rodando testes
+        run: npm run test
 
       - name: Criar nova tag caso não exista
         id: create_initial_tag

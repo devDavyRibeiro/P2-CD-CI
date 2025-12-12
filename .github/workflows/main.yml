@@ -37,6 +37,7 @@ jobs:
             -Dsonar.organization=devdavyribeiro
             -Dsonar.projectKey=devdavyribeiro_P2-CD-CI
             -Dsonar.issues.defaultAssigneeLogin=devdavyribeiro
+            -Dsonar.branch.name=main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_CLOUD }}

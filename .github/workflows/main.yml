@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - develop
 
 jobs:
   version:
@@ -122,4 +121,79 @@ jobs:
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
-          git ad
+          git add -A
+          git commit -m "chore(release): version ${{ env.new_version }}"
+          git tag v${{ env.new_version }}
+          git push origin main --tags
+
+      - name: Login Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: davyribeiro
+          password: ${{ secrets.DOCKER_HUB }}
+
+      - name: Extrai metadatas para a Imagem Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: davyribeiro/tarefa-cd-ci
+          tags: |
+            type=raw,value=${{ steps.version.outputs.new_version }}
+            type=raw,value=latest
+
+      - name: Build e publicação da Imagem Docker
+        id: push
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Deploy via Render API
+        env:
+          RENDER_API_KEY: ${{secrets.RENDER_API_KEY}}
+          SERVICE_ID: ${{secrets.SERVICE_ID}}
+        run: |
+          echo "Criando payload para deploy da versão latest"
+
+          PAYLOAD=$(jq -n \
+            --arg image "docker.io/davyribeiro/tarefa-cd-ci" \
+            --arg version "latest" \
+            '{
+              clearCache: "clear",
+              imageUrl: $image,
+              overrideImage: true,
+              imagePullPolicy: "Always"
+            }'
+          )
+
+          echo "Payload JSON gerado:"
+          echo "$PAYLOAD" | jq .
+
+          echo "Iniciando deploy no Render..."
+
+          RESPONSE=$(curl -i -s -X POST \
+            "https://api.render.com/v1/services/$SERVICE_ID/deploys" \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -d "$PAYLOAD"
+          )
+
+          echo "Resposta completa:"
+          echo "$RESPONSE"
+
+          HTTP_STATUS=$(echo "$RESPONSE" | grep HTTP | awk '{print $2}')
+
+          echo "Status da resposta HTTP: $HTTP_STATUS"
+
+          if [[ "$HTTP_STATUS" =~ ^2[0-9]{2}$ ]]; then
+            echo "Deploy iniciado com sucesso!"
+          else
+            echo "Falha no deploy!"
+            exit 1
+          fi

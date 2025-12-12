@@ -34,11 +34,11 @@ jobs:
         with:
           args: >
             -Dsonar.organization=devdavyribeiro
-            -Dsonar.projectKey=devdavyribeiro_tarefa-cd-ci
+            -Dsonar.projectKey=devdavyribeiro_P2-CD-CI
             -Dsonar.issues.defaultAssigneeLogin=devdavyribeiro
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_CLOUD }}
         continue-on-error: true
       - name: Criar nova tag caso não exista
         id: create_initial_tag

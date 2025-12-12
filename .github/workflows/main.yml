@@ -96,7 +96,7 @@ jobs:
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
-          git add package.json
+          git add -A
           git commit -m "chore(release): version ${{ env.new_version }}"
           git tag v${{ env.new_version }}
           git push origin main --tags
@@ -113,7 +113,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: davyribeiro/tarefa-cd-ci:latest
+          images: davyribeiro/tarefa-cd-ci
           tags: |
             type=raw,value=${{ steps.version.outputs.new_version }}
             type=raw,value=latest
@@ -138,7 +138,7 @@ jobs:
             echo "Criando payload para deploy da versão latest"
 
             PAYLOAD=$(jq -n \
-              --arg image "docker.io/davyribeiro/tarefa-cd-ci:latest" \
+              --arg image "docker.io/davyribeiro/tarefa-cd-ci" \
               --arg version "latest" \
               '{
                 clearCache: "clear",
